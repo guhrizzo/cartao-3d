@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { CONFIG } from "./config.js";
+import { CONFIG } from "./config.js?v=5";
 
 /* ---------- textos e links vindos do config ---------- */
 const $ = (id) => document.getElementById(id);
@@ -191,6 +191,7 @@ function pintarCorpo(material) {
           diffuseColor.rgb = mix(uBodyColor * k, ouro, gold);
         #endif`
       )
+      .replace("#include <emissivemap_fragment>", "#include <emissivemap_fragment>\ntotalEmissiveRadiance += uBodyColor * 0.55 * vEdge;")
       .replace("#include <roughnessmap_fragment>", "#include <roughnessmap_fragment>\nroughnessFactor = mix(roughnessFactor, 0.3, gold);")
       .replace("#include <metalnessmap_fragment>", "#include <metalnessmap_fragment>\nmetalnessFactor = mix(metalnessFactor, 0.85, gold);");
   };
@@ -259,6 +260,7 @@ function buildModelCard(gltf) {
     const mat = new THREE.MeshPhysicalMaterial({
       map: o.material.map, roughness: 0.55, metalness: 0.1,
       clearcoat: 0.18, clearcoatRoughness: 0.5, envMapIntensity: 0.65,
+      side: THREE.DoubleSide, // tapa pequenos buracos da malha mostrando o interior
     });
     if (mat.map) { mat.map.anisotropy = renderer.capabilities.getMaxAnisotropy(); }
     pintarCorpo(mat);
