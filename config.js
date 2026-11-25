@@ -25,7 +25,7 @@ export const CONFIG = {
   trocaAutomaticaMs: 3200,
 
   // Modelo 3D (GLB). Se não carregar, a página usa um cartão desenhado em código.
-  modelo: "assets/cartao.glb?v=5",
+  modelo: "assets/cartao.glb?v=6",
 
   beneficios: [
     { t: "Visual que prende", d: "Animações e 3D que fazem a pessoa parar de rolar o feed e olhar." },

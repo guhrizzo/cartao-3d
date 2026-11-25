@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { CONFIG } from "./config.js?v=5";
+import { CONFIG } from "./config.js?v=6";
 
 /* ---------- textos e links vindos do config ---------- */
 const $ = (id) => document.getElementById(id);
@@ -236,7 +236,8 @@ function buildModelCard(gltf) {
     // Endireita as bordas retas (a malha vem levemente torta), sem mexer nos cantos.
     g.computeBoundingBox();
     const bb = g.boundingBox, pos = g.attributes.position;
-    const mX = (bb.max.x - bb.min.x) * 0.1, mY = (bb.max.y - bb.min.y) * 0.1, tol = 0.025;
+    // tolerância mínima: só pontos praticamente na borda (o contactless fica perto dela e não pode ser puxado)
+    const mX = (bb.max.x - bb.min.x) * 0.1, mY = (bb.max.y - bb.min.y) * 0.1, tol = 0.006;
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i), y = pos.getY(i);
       const meioX = x > bb.min.x + mX && x < bb.max.x - mX;
