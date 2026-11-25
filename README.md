@@ -8,13 +8,16 @@ Tudo que você vai querer mexer está em `config.js`: nome, WhatsApp, Instagram,
 
 ## Rodar no computador
 
-Os módulos JS não abrem direto do arquivo (`file://`), então use um servidor local:
+Os módulos JS não abrem direto do arquivo (`file://`), então use um servidor local.
+
+**Entre primeiro na pasta do projeto.** O servidor mostra tudo que estiver na pasta onde ele foi iniciado, e `--bind 127.0.0.1` impede que outros aparelhos da rede acessem:
 
 ```powershell
-python -m http.server 8123
+cd D:\cartao-3d
+python -m http.server 8123 --bind 127.0.0.1
 ```
 
-Depois abra http://localhost:8123
+Depois abra http://localhost:8123 (deve aparecer a página, não uma lista de arquivos). Para parar, use Ctrl+C.
 
 ## Publicar (GitHub Pages)
 
