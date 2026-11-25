@@ -111,13 +111,15 @@ function drawFront(ctx, tema) {
   // nome
   ctx.font = `600 ${0.34 * PX}px ${FONT}`;
   ctx.globalAlpha = 0.9;
-  ctx.fillText(CONFIG.nomeNoCartao, toX(-W / 2 + 0.7), toY(-H / 2 + 0.62));
+  // no modelo, a faixa de baixo tem números em relevo: o nome sobe para não cobrir
+  const yTexto = usaModelo ? -H / 2 + 1.25 : -H / 2 + 0.62;
+  ctx.fillText(CONFIG.nomeNoCartao, toX(-W / 2 + 0.7), toY(yTexto));
 
   // tipo
   ctx.font = `700 ${0.3 * PX}px ${FONT}`;
   ctx.textAlign = "right";
   ctx.globalAlpha = 0.8;
-  ctx.fillText("crédito", toX(W / 2 - 0.7), toY(-H / 2 + 0.62));
+  ctx.fillText("crédito", toX(W / 2 - 0.7), toY(yTexto));
   ctx.textAlign = "left";
   ctx.globalAlpha = 1;
 }
@@ -169,21 +171,28 @@ function pintarCorpo(material) {
   material.onBeforeCompile = (shader) => {
     shader.uniforms.uBodyColor = { value: bodyColor };
     shader.uniforms.uRef = { value: REF_LUM };
+    shader.vertexShader = shader.vertexShader
+      .replace("#include <common>", "#include <common>\nattribute float aEdge;\nvarying float vEdge;")
+      .replace("#include <begin_vertex>", "#include <begin_vertex>\nvEdge = aEdge;");
     shader.fragmentShader = shader.fragmentShader
-      .replace("#include <common>", "#include <common>\nuniform vec3 uBodyColor;\nuniform float uRef;")
+      .replace("#include <common>", "#include <common>\nuniform vec3 uBodyColor;\nuniform float uRef;\nvarying float vEdge;")
       .replace(
         "#include <map_fragment>",
         `#include <map_fragment>
+        float gold = 0.0;
         #ifdef USE_MAP
           vec3 texC = sampledDiffuseColor.rgb;
           float mx = max(texC.r, max(texC.g, texC.b));
           float mn = min(texC.r, min(texC.g, texC.b));
-          float gold = smoothstep(0.14, 0.32, (mx - mn) / max(mx, 0.0001));
+          gold = smoothstep(0.14, 0.32, (mx - mn) / max(mx, 0.0001)) * (1.0 - vEdge);
           float lum = dot(texC, vec3(0.2126, 0.7152, 0.0722));
-          float k = clamp(lum / uRef, 0.82, 1.08);
-          diffuseColor.rgb = mix(uBodyColor * k, texC, gold);
+          float k = mix(clamp(lum / uRef, 0.82, 1.08), 1.0, vEdge);
+          vec3 ouro = mix(texC, vec3(0.72, 0.45, 0.08), 0.55);
+          diffuseColor.rgb = mix(uBodyColor * k, ouro, gold);
         #endif`
-      );
+      )
+      .replace("#include <roughnessmap_fragment>", "#include <roughnessmap_fragment>\nroughnessFactor = mix(roughnessFactor, 0.3, gold);")
+      .replace("#include <metalnessmap_fragment>", "#include <metalnessmap_fragment>\nmetalnessFactor = mix(metalnessFactor, 0.85, gold);");
   };
   material.needsUpdate = true;
 }
@@ -220,9 +229,36 @@ function buildModelCard(gltf) {
   model.position.set(-center.x * s, -center.y * s, -center.z * s * (D / (size.z * s)));
   model.traverse((o) => {
     if (!o.isMesh) return;
+    // Alisa o corpo: normais quase retas viram retas (tira os vincos) e as bordas
+    // são marcadas para usar cor lisa, sem a textura bagunçada do contorno.
+    const g = o.geometry;
+    // Endireita as bordas retas (a malha vem levemente torta), sem mexer nos cantos.
+    g.computeBoundingBox();
+    const bb = g.boundingBox, pos = g.attributes.position;
+    const mX = (bb.max.x - bb.min.x) * 0.1, mY = (bb.max.y - bb.min.y) * 0.1, tol = 0.025;
+    for (let i = 0; i < pos.count; i++) {
+      const x = pos.getX(i), y = pos.getY(i);
+      const meioX = x > bb.min.x + mX && x < bb.max.x - mX;
+      const meioY = y > bb.min.y + mY && y < bb.max.y - mY;
+      if (meioX && y > bb.max.y - tol * 2) pos.setY(i, bb.max.y);
+      else if (meioX && y < bb.min.y + tol * 2) pos.setY(i, bb.min.y);
+      if (meioY && x > bb.max.x - tol * 2) pos.setX(i, bb.max.x);
+      else if (meioY && x < bb.min.x + tol * 2) pos.setX(i, bb.min.x);
+    }
+    pos.needsUpdate = true;
+    const n = g.attributes.normal;
+    const edge = new Float32Array(n.count);
+    for (let i = 0; i < n.count; i++) {
+      const nz = n.getZ(i);
+      if (nz > 0.85) n.setXYZ(i, 0, 0, 1);
+      else if (nz < -0.85) n.setXYZ(i, 0, 0, -1);
+      edge[i] = Math.abs(nz) <= 0.85 ? 1 : 0;
+    }
+    n.needsUpdate = true;
+    g.setAttribute("aEdge", new THREE.BufferAttribute(edge, 1));
     const mat = new THREE.MeshPhysicalMaterial({
-      map: o.material.map, roughness: 0.5, metalness: 0.1,
-      clearcoat: 0.5, clearcoatRoughness: 0.4,
+      map: o.material.map, roughness: 0.55, metalness: 0.1,
+      clearcoat: 0.18, clearcoatRoughness: 0.5, envMapIntensity: 0.65,
     });
     if (mat.map) { mat.map.anisotropy = renderer.capabilities.getMaxAnisotropy(); }
     pintarCorpo(mat);
