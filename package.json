@@ -1,0 +1,19 @@
+{
+  "name": "nubank-conceito",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 8123 --strictPort",
+    "build": "vite build --base=./"
+  },
+  "dependencies": {
+    "@fontsource-variable/manrope": "5.2.8",
+    "gsap": "3.15.1",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "three": "0.160.0"
+  },
+  "devDependencies": {
+    "vite": "7.3.6"
+  }
+}

@@ -3,67 +3,376 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Cartão 3D • Site que chama atenção</title>
-  <meta name="description" content="Cartão 3D interativo que troca de cor. Sites que chamam atenção para o seu negócio.">
-  <meta name="theme-color" content="#0B0B0F">
-  <link rel="stylesheet" href="style.css?v=6">
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-    }
-  }
-  </script>
+  <meta name="theme-color" content="#10051e">
+  <meta name="description" content="Conheça a conta Nubank, faça pagamentos e transferências com Pix e organize seus objetivos com as Caixinhas. Tudo pelo app.">
+  <title>Nubank | Conta, Pix, Caixinhas e cartão</title>
+  <link rel="icon" href="./assets/nubank-favicon.png" type="image/png">
+  <link rel="stylesheet" href="./style.css">
 </head>
-<body data-theme="black">
-  <div class="glow" aria-hidden="true"></div>
-
-  <header class="topo">
-    <a class="marca" href="#" id="marca">SeuNome</a>
-    <a class="btn btn-sm" id="cta-topo" href="#contato">Quero o meu</a>
+<body>
+  <a class="skip-link" href="#inicio">Pular para o conteúdo</a>
+  <header class="header">
+    <div class="header-inner">
+      <a class="wordmark" href="#inicio" aria-label="Nubank, início">
+        <img src="./assets/nubank-logo.svg" width="44" height="24" alt="">
+      </a>
+      <nav aria-label="Principal">
+        <a class="nav-detail" href="#detalhes">Produtos</a>
+        <a class="nav-detail" href="#no-app">No app</a>
+        <a class="nav-detail" href="#faq">FAQ</a>
+      </nav>
+    </div>
   </header>
 
-  <main>
-    <section class="hero">
-      <div class="hero-texto">
-        <p class="selo">Site 3D interativo</p>
-        <h1 id="titulo"></h1>
-        <p class="sub" id="subtitulo"></p>
-        <div class="acoes">
-          <a class="btn" id="cta-principal" href="#contato">Chamar no WhatsApp</a>
-          <a class="btn btn-ghost" href="#beneficios">Ver detalhes</a>
-        </div>
-      </div>
+  <div id="preloader" class="preloader" role="status" data-minimum-ms="2000" hidden>
+    <div class="preloader-light" aria-hidden="true"></div>
+    <div class="preloader-content">
+      <img class="preloader-mark" src="./assets/nubank-logo.svg" width="132" height="72" alt="">
+      <p class="preloader-caption">Carregando</p>
+      <div class="preloader-track" aria-hidden="true"><div id="preloader-bar"></div></div>
+      <p class="preloader-percent" id="preloader-percent" aria-hidden="true">0%</p>
+    </div>
+  </div>
 
-      <div class="hero-card">
-        <div id="stage" class="stage" aria-label="Cartão 3D. Arraste para girar."></div>
-        <p class="dica">Arraste para girar</p>
+  <div id="smooth-wrapper">
+    <div id="smooth-content">
+      <main id="inicio" tabindex="-1">
+        <section class="hero" aria-labelledby="titulo">
+          <div class="hero-art" aria-hidden="true">
+            <div class="hero-art-motion"></div>
+          </div>
+          <div class="hero-grid wrap">
+            <div class="hero-copy">
+              <p class="eyebrow">Nubank</p>
+              <h1 id="titulo">Seu dinheiro.<br><em>Do seu jeito.</em></h1>
+              <p class="hero-description">Pague, receba e organize seu dinheiro no app. Conheça a conta, as Caixinhas e o cartão Nubank.</p>
+            </div>
+            <div class="showcase" id="explorar" tabindex="-1">
+              <div class="stage-anchor">
+                <div id="stage" class="stage" role="img" aria-label="Ilustração do cartão Nubank">
+                  <div class="static-card" aria-hidden="true">
+                    <img src="./assets/nubank-logo.svg" width="44" height="24" alt=""><i></i><small>crédito</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="hero-footer wrap" data-reveal>
+            <span>Experiência conceitual</span>
+            <a href="#detalhes">Conheça os produtos <span aria-hidden="true">↓</span></a>
+          </div>
+        </section>
 
-        <div class="cores" id="cores" role="group" aria-label="Cor do cartão"></div>
-        <div class="controles">
-          <button class="mini" id="btn-auto" type="button" aria-pressed="true">Troca automática: ligada</button>
-          <button class="mini" id="btn-virar" type="button">Ver verso</button>
-        </div>
-      </div>
-    </section>
+        <section class="details" id="detalhes" tabindex="-1" aria-labelledby="tit-detalhes">
+          <div class="wrap">
+            <div class="details-heading">
+              <div class="details-intro" data-reveal>
+                <p class="eyebrow">Produtos Nubank</p>
+                <h2 id="tit-detalhes">Da rotina aos<br>seus planos.</h2>
+              </div>
+              <div class="card-arrival" aria-hidden="true"></div>
+            </div>
+            <div class="benefits">
+              <article data-reveal>
+                <span class="feature-icon" aria-hidden="true">◔</span>
+                <h3>Conta Nubank</h3>
+                <p>Receba transferências, faça Pix e pague suas contas pelo app.</p>
+              </article>
+              <article data-reveal>
+                <span class="feature-icon" aria-hidden="true">≋</span>
+                <h3>Caixinhas</h3>
+                <p>Separe dinheiro para objetivos como uma viagem ou uma reserva para imprevistos.</p>
+              </article>
+              <article data-reveal>
+                <span class="feature-icon" aria-hidden="true">▱</span>
+                <h3>Cartão Nubank</h3>
+                <p>Use o cartão nas compras e acompanhe as transações e a fatura pelo app.</p>
+              </article>
+            </div>
+          </div>
+        </section>
 
-    <section class="beneficios" id="beneficios">
-      <div class="grade" id="grade"></div>
-    </section>
+        <section class="app-section" id="no-app" tabindex="-1" aria-labelledby="tit-app">
+          <div class="wrap app-inner">
+            <h2 id="tit-app" data-reveal>Cuide do seu dinheiro pelo app.</h2>
+            <div class="photo-frame app-photo-frame" data-reveal>
+              <img class="app-photo" src="./assets/nubank-app.webp" width="900" height="720" loading="lazy"
+                   decoding="async" alt="Mulher consulta o app Nubank no celular, com um cachorro ao fundo.">
+            </div>
+            <dl class="app-features">
+              <div data-reveal>
+                <dt>Consulte saldo e extrato</dt>
+                <dd>Veja quanto tem na conta e confira as entradas e saídas pelo app.</dd>
+              </div>
+              <div data-reveal>
+                <dt>Faça e receba Pix</dt>
+                <dd>Envie dinheiro com uma chave Pix ou compartilhe a sua para receber.</dd>
+              </div>
+              <div data-reveal>
+                <dt>Veja os gastos por categoria</dt>
+                <dd>Veja as compras do cartão separadas por categoria para entender melhor seus gastos.</dd>
+              </div>
+              <div data-reveal>
+                <dt>Ajuste seus limites Pix</dt>
+                <dd>Escolha limites para suas transferências nas configurações do app.</dd>
+              </div>
+            </dl>
+          </div>
+        </section>
 
-    <section class="contato" id="contato">
-      <h2>Vamos tirar o seu site do papel?</h2>
-      <p>Me chame e eu te mostro como ficaria o seu negócio.</p>
-      <div class="acoes centro">
-        <a class="btn" id="cta-whats" target="_blank" rel="noopener" href="#">WhatsApp</a>
-        <a class="btn btn-ghost" id="cta-insta" target="_blank" rel="noopener" href="#">Instagram</a>
-      </div>
-    </section>
-  </main>
+        <section class="product-section wallet-section" id="carteira-digital" aria-labelledby="tit-carteira">
+          <div class="wrap wallet-inner">
+            <div class="product-copy" data-reveal>
+              <h2 id="tit-carteira">Pague com o celular ou o relógio.</h2>
+              <p>Adicione o cartão Nubank à carteira digital do seu aparelho e aproxime-o da maquininha quando for pagar.</p>
+              <ul class="wallet-services" aria-label="Carteiras compatíveis">
+                <li>Apple Pay</li>
+                <li>Google Pay</li>
+                <li>Samsung Pay</li>
+              </ul>
+              <a class="product-link" href="https://nubank.com.br/nu/cartao/carteira-digital">Como adicionar o cartão <span aria-hidden="true">↗</span></a>
+            </div>
+            <div class="photo-frame">
+              <img class="wallet-photo" src="./assets/nubank-carteira-digital.webp" width="900" height="464"
+                   loading="lazy" decoding="async" alt="Pessoa aproxima um relógio de uma maquininha para pagar com o cartão Nubank.">
+            </div>
+          </div>
+        </section>
 
-  <footer class="rodape"><span id="rodape"></span></footer>
+        <section class="product-section payments-section" id="pagamentos" aria-labelledby="tit-pagamentos">
+          <div class="wrap payments-inner">
+            <div class="product-copy" data-reveal>
+              <h2 id="tit-pagamentos">Pix e boletos pelo app.</h2>
+              <p>Use a Conta Nubank para transferir dinheiro e pagar suas contas pelo celular.</p>
+              <a class="product-link" href="https://nubank.com.br/nu/conta/pix">Conheça o Pix do Nubank <span aria-hidden="true">↗</span></a>
+            </div>
+            <dl class="payments-methods">
+              <div data-reveal>
+                <dt>Pix</dt>
+                <dd>Envie e receba transferências instantâneas, inclusive entre instituições diferentes.</dd>
+              </div>
+              <div data-reveal>
+                <dt>Boletos</dt>
+                <dd>Escaneie o código de barras ou digite os números do boleto e confira os dados antes de pagar.</dd>
+              </div>
+            </dl>
+          </div>
+        </section>
 
-  <script type="module" src="main.js?v=6"></script>
+        <section class="product-section savings-section" id="caixinhas" aria-labelledby="tit-caixinhas">
+          <div class="wrap">
+            <div class="product-copy" data-reveal>
+              <h2 id="tit-caixinhas">Guarde para seus planos.</h2>
+              <p>Com as Caixinhas, você separa o dinheiro por objetivo e acompanha quanto já guardou em cada um.</p>
+            </div>
+            <div class="savings-options">
+              <article>
+                <h3 data-reveal>Separe por objetivo</h3>
+                <p data-reveal>Crie uma Caixinha para cada plano, dê um nome e escolha quanto guardar.</p>
+              </article>
+              <article>
+                <h3 data-reveal>Acompanhe pelo app</h3>
+                <p data-reveal>Consulte quanto já guardou, veja o histórico e confira as condições de resgate no app.</p>
+              </article>
+            </div>
+            <a class="product-link" href="https://nubank.com.br/nu/caixinhas" data-reveal>Conheça as Caixinhas <span aria-hidden="true">↗</span></a>
+          </div>
+        </section>
+
+        <section class="scenes-section" id="dia-a-dia" aria-labelledby="tit-cenas">
+          <div class="wrap">
+            <div class="scenes-heading" data-reveal>
+              <h2 id="tit-cenas">O Nubank no dia a dia.</h2>
+              <p>Três formas de usar o app para movimentar, guardar e acompanhar seu dinheiro.</p>
+            </div>
+            <div class="scenes-window">
+              <div class="scenes-viewport" tabindex="0" role="region" aria-label="Formas de usar o app Nubank">
+                <div class="scenes-track">
+                  <article class="scene-panel">
+                    <div class="scene-media">
+                      <img src="./assets/nubank-cena-virtual.webp" width="900" height="600"
+                           loading="lazy" decoding="async" alt="Homem consulta o app Nubank no celular enquanto segura um cartão.">
+                    </div>
+                    <div class="scene-content">
+                      <p class="eyebrow">Pagamentos e transferências</p>
+                      <h3>Pague e receba com Pix.</h3>
+                      <p>Use o saldo para transferir ou pagar. Para receber, compartilhe sua chave Pix.</p>
+                    </div>
+                  </article>
+                  <article class="scene-panel">
+                    <div class="scene-media">
+                      <img src="./assets/nubank-cena-caixinhas.webp" width="900" height="601"
+                           loading="lazy" decoding="async" alt="Pessoa usa as Caixinhas do Nubank no celular, com uma cozinha ao fundo.">
+                    </div>
+                    <div class="scene-content">
+                      <p class="eyebrow">Planejamento</p>
+                      <h3>Guarde para uma meta.</h3>
+                      <p>Crie uma Caixinha no app e escolha quanto separar para o seu objetivo.</p>
+                    </div>
+                  </article>
+                  <article class="scene-panel">
+                    <div class="scene-media">
+                      <img src="./assets/nubank-cena-fatura.webp" width="640" height="640"
+                           loading="lazy" decoding="async" alt="Ilustração do Nubank com uma pessoa usando binóculos.">
+                    </div>
+                    <div class="scene-content">
+                      <p class="eyebrow">Acompanhamento</p>
+                      <h3>Organize seus gastos.</h3>
+                      <p>Consulte o extrato da conta e veja as compras do cartão por categoria no app.</p>
+                    </div>
+                  </article>
+                </div>
+              </div>
+            </div>
+            <div class="scenes-guide" aria-hidden="true">
+              <span class="scenes-hint">Deslize para o lado →</span>
+              <span class="scenes-scroll-hint">Role para avançar →</span>
+              <div class="scenes-progress"><div></div></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="faq" id="faq" tabindex="-1" aria-labelledby="tit-faq">
+          <div class="wrap faq-inner">
+            <div class="faq-heading" data-reveal>
+              <h2 id="tit-faq">Perguntas frequentes</h2>
+              <a href="https://nubank.com.br/perguntas">Ver mais dúvidas no Nubank <span aria-hidden="true">↗</span></a>
+            </div>
+            <div class="faq-items">
+              <details name="faq-nubank">
+                <summary data-reveal>O que posso fazer com a Conta Nubank?<span class="faq-icon" aria-hidden="true"></span></summary>
+                <div class="faq-answer"><p>Você pode enviar e receber Pix, pagar boletos e acompanhar o saldo e o extrato pelo app.</p></div>
+              </details>
+              <details name="faq-nubank">
+                <summary data-reveal>Como faço para pedir o cartão?<span class="faq-icon" aria-hidden="true"></span></summary>
+                <div class="faq-answer"><p>Você pode iniciar o pedido na <a href="https://nubank.com.br/nu/cartao">página oficial do cartão</a>. O Nubank analisa cada solicitação de crédito individualmente.</p></div>
+              </details>
+              <details name="faq-nubank">
+                <summary data-reveal>Como funcionam as Caixinhas?<span class="faq-icon" aria-hidden="true"></span></summary>
+                <div class="faq-answer"><p>Você cria uma Caixinha para um objetivo, dá um nome e escolhe quanto quer guardar. Acompanhe o valor em cada Caixinha pelo app.</p></div>
+              </details>
+              <details name="faq-nubank">
+                <summary data-reveal>Onde encontro ajuda?<span class="faq-icon" aria-hidden="true"></span></summary>
+                <div class="faq-answer"><p>Acesse o chat no app ou consulte as perguntas frequentes no site oficial do Nubank.</p></div>
+              </details>
+              <details name="faq-nubank">
+                <summary data-reveal>Posso pagar pelo celular ou relógio?<span class="faq-icon" aria-hidden="true"></span></summary>
+                <div class="faq-answer"><p>Sim. Cadastre o cartão em uma carteira compatível, como Google Pay, Apple Pay ou Samsung Pay, e use um aparelho compatível em terminais que aceitem aproximação.</p></div>
+              </details>
+            </div>
+          </div>
+        </section>
+
+        <section class="closing" aria-labelledby="tit-final">
+          <div class="wrap closing-inner">
+            <div class="closing-copy" data-reveal>
+              <h2 id="tit-final">Conheça o<br>Nubank.</h2>
+              <a class="button primary" href="https://nubank.com.br/">Conhecer mais <span aria-hidden="true">↗</span></a>
+            </div>
+            <div class="photo-frame">
+              <img class="closing-photo" src="./assets/nubank-conta.webp" width="930" height="675"
+                   loading="lazy" decoding="async" alt="Mulher usando o celular à mesa, com frutas à frente.">
+            </div>
+          </div>
+        </section>
+      </main>
+      <footer class="footer">
+        <div class="wrap"><span>Projeto conceitual independente</span><a href="#inicio">Voltar ao topo ↑</a></div>
+      </footer>
+    </div>
+  </div>
+  <script>
+    (() => {
+      const loader = document.getElementById("preloader");
+      const percentage = document.getElementById("preloader-percent");
+      const motion = matchMedia("(prefers-reduced-motion: reduce)");
+      const pageElements = [document.getElementById("smooth-wrapper"), document.querySelector(".header"), document.querySelector(".skip-link")];
+      const minimumMs = Number(loader.dataset.minimumMs);
+      const fullHoldMs = 620;
+      const exitMs = 720;
+      const completionMs = 220;
+      const deadlineMs = 7000;
+      const startedAt = performance.now();
+      let progress = 0;
+      let frame;
+      let completing = false;
+
+      loader.style.setProperty("--preloader-duration", minimumMs + "ms");
+      loader.style.setProperty("--preloader-exit-duration", exitMs + "ms");
+      loader.dataset.startedAt = startedAt;
+      loader.hidden = false;
+      pageElements.forEach((element) => { element.inert = true; });
+      frame = requestAnimationFrame(advance);
+      const fallback = setTimeout(complete, deadlineMs - completionMs - fullHoldMs - exitMs - 90);
+      const deadline = setTimeout(finish, deadlineMs);
+      window.completePreloader = complete;
+
+      function paint(value) {
+        const percent = Math.floor(value);
+        if (percent === progress) return;
+        progress = percent;
+        loader.style.setProperty("--preloader-progress", progress / 100);
+        percentage.textContent = progress + "%";
+      }
+
+      function advance(now) {
+        const elapsed = Math.max(0, now - startedAt);
+        const fraction = Math.min(1, elapsed / minimumMs);
+        paint(90 * (fraction * (2 - fraction)));
+        if (fraction < 1) frame = requestAnimationFrame(advance);
+      }
+
+      function complete() {
+        if (completing || loader.hidden) return;
+        completing = true;
+        clearTimeout(fallback);
+        setTimeout(completeBar, Math.max(0, minimumMs - (performance.now() - startedAt)));
+      }
+
+      function completeBar() {
+        if (loader.hidden) return;
+        cancelAnimationFrame(frame);
+        if (motion.matches) {
+          showComplete();
+          return;
+        }
+        const from = progress;
+        const finishStartedAt = performance.now();
+        function fill(now) {
+          const fraction = Math.min(1, Math.max(0, now - finishStartedAt) / 220);
+          paint(from + (100 - from) * fraction * (2 - fraction));
+          if (fraction === 1) showComplete();
+          else frame = requestAnimationFrame(fill);
+        }
+        frame = requestAnimationFrame(fill);
+      }
+
+      function showComplete() {
+        paint(100);
+        setTimeout(() => {
+          startReveal();
+          setTimeout(finish, motion.matches ? 0 : exitMs);
+        }, fullHoldMs);
+      }
+
+      function startReveal() {
+        if (loader.classList.contains("is-leaving")) return;
+        loader.classList.add("is-leaving");
+        window.dispatchEvent(new Event("nubank:intro-revealing"));
+      }
+
+      function finish() {
+        if (loader.hidden) return;
+        clearTimeout(fallback);
+        clearTimeout(deadline);
+        cancelAnimationFrame(frame);
+        startReveal();
+        loader.hidden = true;
+        pageElements.forEach((element) => { element.inert = false; });
+        window.dispatchEvent(new Event("nubank:intro-finished"));
+      }
+    })();
+  </script>
+  <script type="module" src="./experience.js"></script>
 </body>
 </html>
