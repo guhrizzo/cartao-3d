@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { CONFIG } from "./config.js";
 
 /* ---------- textos e links vindos do config ---------- */
@@ -83,27 +84,29 @@ function drawFront(ctx, tema) {
   ctx.globalAlpha = 0.96;
   ctx.fillText(CONFIG.marca, toX(-W / 2 + 0.7), toY(H / 2 - 0.95));
 
-  // contactless
-  ctx.globalAlpha = 0.85;
-  ctx.strokeStyle = tema.texto;
-  ctx.lineWidth = 0.075 * PX;
-  ctx.lineCap = "round";
-  const cx = toX(W / 2 - 1.5), cy = toY(CHIP.y);
-  for (let i = 1; i <= 4; i++) {
-    ctx.beginPath();
-    ctx.arc(cx - 0.35, cy, i * 0.3 * PX, -0.75, 0.75);
-    ctx.stroke();
-  }
+  if (!usaModelo) {
+    // contactless
+    ctx.globalAlpha = 0.85;
+    ctx.strokeStyle = tema.texto;
+    ctx.lineWidth = 0.075 * PX;
+    ctx.lineCap = "round";
+    const cx = toX(W / 2 - 1.5), cy = toY(CHIP.y);
+    for (let i = 1; i <= 4; i++) {
+      ctx.beginPath();
+      ctx.arc(cx - 0.35, cy, i * 0.3 * PX, -0.75, 0.75);
+      ctx.stroke();
+    }
 
-  // número em relevo (pontos + final)
-  ctx.globalAlpha = 0.92;
-  ctx.font = `600 ${0.46 * PX}px ${FONT}`;
-  const num = `••••  ••••  ••••  ${CONFIG.ultimosDigitos}`;
-  const nx = toX(-W / 2 + 0.7), ny = toY(-0.62);
-  ctx.fillStyle = "rgba(0,0,0,.35)";
-  ctx.fillText(num, nx + 2, ny + 3);
-  ctx.fillStyle = tema.texto;
-  ctx.fillText(num, nx, ny);
+    // número em relevo (pontos + final)
+    ctx.globalAlpha = 0.92;
+    ctx.font = `600 ${0.46 * PX}px ${FONT}`;
+    const num = `••••  ••••  ••••  ${CONFIG.ultimosDigitos}`;
+    const nx = toX(-W / 2 + 0.7), ny = toY(-0.62);
+    ctx.fillStyle = "rgba(0,0,0,.35)";
+    ctx.fillText(num, nx + 2, ny + 3);
+    ctx.fillStyle = tema.texto;
+    ctx.fillText(num, nx, ny);
+  }
 
   // nome
   ctx.font = `600 ${0.34 * PX}px ${FONT}`;
@@ -157,7 +160,92 @@ let renderer, scene, camera, card, bodyMat, frontTex, backTex, frontCtx, backCtx
 const bodyColor = new THREE.Color(temas[0].cor);
 const targetColor = new THREE.Color(temas[0].cor);
 
+/* ---------- cartão a partir do modelo GLB ---------- */
+let usaModelo = false;
+const REF_LUM = 0.55; // luminância (linear) do cinza do corpo na textura
+
+function pintarCorpo(material) {
+  // Troca só a cor cinza do corpo; o dourado do chip e os relevos continuam.
+  material.onBeforeCompile = (shader) => {
+    shader.uniforms.uBodyColor = { value: bodyColor };
+    shader.uniforms.uRef = { value: REF_LUM };
+    shader.fragmentShader = shader.fragmentShader
+      .replace("#include <common>", "#include <common>\nuniform vec3 uBodyColor;\nuniform float uRef;")
+      .replace(
+        "#include <map_fragment>",
+        `#include <map_fragment>
+        #ifdef USE_MAP
+          vec3 texC = sampledDiffuseColor.rgb;
+          float mx = max(texC.r, max(texC.g, texC.b));
+          float mn = min(texC.r, min(texC.g, texC.b));
+          float gold = smoothstep(0.14, 0.32, (mx - mn) / max(mx, 0.0001));
+          float lum = dot(texC, vec3(0.2126, 0.7152, 0.0722));
+          float k = clamp(lum / uRef, 0.82, 1.08);
+          diffuseColor.rgb = mix(uBodyColor * k, texC, gold);
+        #endif`
+      );
+  };
+  material.needsUpdate = true;
+}
+
+function addDecals() {
+  const aniso = renderer.capabilities.getMaxAnisotropy();
+  const decalMat = (tex) => new THREE.MeshBasicMaterial({
+    map: tex, transparent: true, depthWrite: false, toneMapped: false,
+  });
+  const fc = makeCanvas(W, H); frontCtx = fc.getContext("2d");
+  frontTex = new THREE.CanvasTexture(fc);
+  frontTex.colorSpace = THREE.SRGBColorSpace; frontTex.anisotropy = aniso;
+  const front = new THREE.Mesh(new THREE.PlaneGeometry(W, H), decalMat(frontTex));
+  front.position.z = FRONT_Z + 0.002;
+  card.add(front);
+  const bc = makeCanvas(W, H); backCtx = bc.getContext("2d");
+  backTex = new THREE.CanvasTexture(bc);
+  backTex.colorSpace = THREE.SRGBColorSpace; backTex.anisotropy = aniso;
+  const back = new THREE.Mesh(new THREE.PlaneGeometry(W, H), decalMat(backTex));
+  back.rotation.y = Math.PI;
+  back.position.z = -FRONT_Z - 0.002;
+  card.add(back);
+}
+
+function buildModelCard(gltf) {
+  usaModelo = true;
+  card = new THREE.Group();
+  const model = gltf.scene;
+  const box = new THREE.Box3().setFromObject(model);
+  const size = box.getSize(new THREE.Vector3());
+  const center = box.getCenter(new THREE.Vector3());
+  const s = W / size.x;
+  model.scale.set(s, s, s * (D / (size.z * s)));
+  model.position.set(-center.x * s, -center.y * s, -center.z * s * (D / (size.z * s)));
+  model.traverse((o) => {
+    if (!o.isMesh) return;
+    const mat = new THREE.MeshPhysicalMaterial({
+      map: o.material.map, roughness: 0.5, metalness: 0.1,
+      clearcoat: 0.5, clearcoatRoughness: 0.4,
+    });
+    if (mat.map) { mat.map.anisotropy = renderer.capabilities.getMaxAnisotropy(); }
+    pintarCorpo(mat);
+    o.material = mat;
+  });
+  card.add(model);
+  addDecals();
+  scene.add(card);
+  applyTheme(false);
+}
+
 function buildCard() {
+  const fallback = () => buildProceduralCard();
+  if (!CONFIG.modelo) return fallback();
+  new GLTFLoader().load(
+    CONFIG.modelo,
+    (gltf) => { try { buildModelCard(gltf); } catch (e) { console.error(e); fallback(); } },
+    undefined,
+    (err) => { console.warn("Modelo não carregou, usando cartão em código.", err); fallback(); }
+  );
+}
+
+function buildProceduralCard() {
   card = new THREE.Group();
 
   const geo = new THREE.ExtrudeGeometry(roundedRect(W, H, R), {
@@ -317,6 +405,7 @@ function init() {
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   renderer.setAnimationLoop(() => {
     const t = clock.getElapsedTime();
+    if (!card) return renderer.render(scene, camera);
     // inércia e encaixe na face mais próxima
     if (!dragging) {
       rotY += velY; velY *= 0.92;
@@ -330,7 +419,8 @@ function init() {
     card.position.y = reduce ? 0 : Math.sin(t * 1.1) * 0.08;
 
     bodyColor.lerp(targetColor, 0.08);
-    bodyMat.color.copy(bodyColor);
+    if (!card) return renderer.render(scene, camera);
+    if (bodyMat) bodyMat.color.copy(bodyColor);
     renderer.render(scene, camera);
   });
 

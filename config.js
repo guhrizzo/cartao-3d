@@ -24,6 +24,9 @@ export const CONFIG = {
   ],
   trocaAutomaticaMs: 3200,
 
+  // Modelo 3D (GLB). Se não carregar, a página usa um cartão desenhado em código.
+  modelo: "assets/cartao.glb",
+
   beneficios: [
     { t: "Visual que prende", d: "Animações e 3D que fazem a pessoa parar de rolar o feed e olhar." },
     { t: "Rápido no celular", d: "Leve, responsivo e pensado para quem chega pelo Instagram." },
